@@ -22,10 +22,10 @@ A B C D E F G H   0 1 width * 2 + gap
 */
 
 const (
-	width  = 3
-	format = "%3d"
-	gap    = 1
-	tol    = 2
+	width     = 3
+	format    = "%3d"
+	gap       = 1
+	tolerance = 1
 )
 
 type node struct {
@@ -62,9 +62,9 @@ func (n *node) add(v int) (*node, int) {
 	}
 	dl := n.l.depth()
 	dr := n.r.depth()
-	if dl >= dr+tol {
+	if dl > dr+tolerance {
 		n.rr()
-	} else if dl <= dr-tol {
+	} else if dl < dr-tolerance {
 		n.rl()
 	}
 	return n, n.depth()
