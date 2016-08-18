@@ -22,18 +22,33 @@ A B C D E F G H   0 1 width * 2 + gap
 */
 
 const (
-	width = 3
+	width  = 3
 	format = "%3d"
-	gap = 1
-	tol = 2
+	gap    = 1
+	tol    = 2
 )
 
 type node struct {
-	v int
+	v  int
 	dl int
 	dr int
-	l *node
-	r *node
+	l  *node
+	r  *node
+}
+
+func (n *node) depth() int {
+	if n == nil {
+		return 0
+	}
+	return max(n.dl, n.dr) + 1
+}
+
+func (n *node) addAll(values ...int) *node {
+	ret := n
+	for _, v := range values {
+		ret, _ = ret.add(v)
+	}
+	return ret
 }
 
 func (n *node) add(v int) (*node, int) {
@@ -47,9 +62,9 @@ func (n *node) add(v int) (*node, int) {
 	}
 	dl := n.l.depth()
 	dr := n.r.depth()
-	if dl >= dr + tol {
+	if dl >= dr+tol {
 		n.rr()
-	} else if dl <= dr - tol {
+	} else if dl <= dr-tol {
 		n.rl()
 	}
 	return n, n.depth()
@@ -65,10 +80,10 @@ func (n *node) rr() {
 	n.v = l.v
 	n.l = l.l
 	n.r = &node{
-		v: v,
-		l: l.r,
+		v:  v,
+		l:  l.r,
 		dl: l.r.depth(),
-		r: r,
+		r:  r,
 		dr: r.depth(),
 	}
 	n.dl = n.l.depth()
@@ -85,29 +100,14 @@ func (n *node) rl() {
 	n.v = r.v
 	n.r = r.r
 	n.l = &node{
-		v: v,
-		l: l,
+		v:  v,
+		l:  l,
 		dl: l.depth(),
-		r: r.l,
+		r:  r.l,
 		dr: r.l.depth(),
 	}
 	n.dl = n.l.depth()
 	n.dr = n.r.depth()
-}
-
-func (n *node) addAll(values... int) *node {
-	ret := n
-	for _,v := range values {
-		ret,_ = ret.add(v)
-	}
-	return ret
-}
-
-func (n *node) depth() int {
-	if n == nil {
-		return 0
-	}
-	return max(n.dl, n.dr) + 1
 }
 
 func (n *node) print() {
@@ -128,12 +128,12 @@ func (n *node) printDepth(depth int, printDepth int, maxDepth int) {
 		pad(g)
 	} else {
 		if depth == printDepth {
-			fmt.Printf("%d%d%d", n.dl, n.v, n.dr)
-			//fmt.Printf(format, n.v)
+			//fmt.Printf("%d%d%d", n.dl, n.v, n.dr)
+			fmt.Printf(format, n.v)
 			pad(g)
 		} else {
-			n.l.printDepth(depth + 1, printDepth, maxDepth)
-			n.r.printDepth(depth + 1, printDepth, maxDepth)
+			n.l.printDepth(depth+1, printDepth, maxDepth)
+			n.r.printDepth(depth+1, printDepth, maxDepth)
 		}
 	}
 }
@@ -142,8 +142,8 @@ func calc(depth int, maxDepth int) (int, int) {
 	if depth == maxDepth {
 		return 0, gap
 	}
-	_, g := calc(depth + 1, maxDepth)
-	return g + (width / 2), (g + (width / 2)) * 2 + gap
+	_, g := calc(depth+1, maxDepth)
+	return g + (width / 2), (g+(width/2))*2 + gap
 }
 
 func pad(num int) {
@@ -166,9 +166,8 @@ func main() {
 	//tree = tree.addAll(1, 2, 3, 4, 5, 6, 7)
 	//tree = tree.addAll(1, 2, 3, 4, 7, 6, 5)
 	for i := 0; i < 100; i++ {
-		tree,_ = tree.add(rand.Intn(10))
+		tree, _ = tree.add(rand.Intn(1000))
 	}
-	//tree = tree.addAll(5, 4, 6)
 	tree.print()
 	fmt.Println(tree.depth())
 
